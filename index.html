@@ -27,7 +27,7 @@
       resultDiv.innerHTML = "<p style='color:red;'>No email provided in the URL.</p>";
     } else {
       // 2. Build the Apps Script URL with the email
-      const scriptUrl = "https://script.google.com/a/macros/aiesec.es/s/AKfycbwuSksdDOyleV_3863n57kKtUSSEr5ID99IDESB9XCJxw/exec?email=" + encodeURIComponent(email);
+      const scriptUrl = "https://script.google.com/macros/s/AKfycbwuSksdDOyleV_3863n57kKtUSSEr5ID99IDESB9q0EGjcIi7rI8HeWclYpHRyuxK-w9g/exec?email=" + encodeURIComponent(email);
       
       // 3. Fetch attendee info from Apps Script
       fetch(scriptUrl)

@@ -27,17 +27,17 @@
       resultDiv.innerHTML = "<p style='color:red;'>No email provided in the URL.</p>";
     } else {
 
-      // ✅ Your CORRECT CORS-enabled Apps Script URL
-      const baseUrl = "https://script.googleusercontent.com/a/macros/aiesec.es/echo?user_content_key=AehSKLjhBXliEx8x-kHfqRJ9t6-VVP_fsfdZNgN2EZDeehB4aVrjIOrW85xTZyLVFMI9_rLNz_Vs9rfeZ8rSqitGN6knIiTsrAgxBJYj0NVJ-IUKf0FdA7pDRKB3JkSDXF-oEO-s3sUKWyPWqtcRP6yRX6DLaEWMfDxUh-o4oibxA73bvK_iw-5hRjXvntXNhA6I5ePSM9a2SzAGlAkoqEmdfjZCI5dBR6a54ff8grA-KDIwj3WCRXcnt61pUGoW0QOrvrU4Sw0kMSwlvq1imeMpFO2zZc3fWMs3uMn5ZPcwzGqEzIPcew78XhjNNuxsZIG7dEEqeolgk27D8FPgfA8&lib=M_hKaFc4Ht1c5obgELxsJ-HUv17GpTK04";
+      // ✅ Use your Cloudflare Worker — NOT googleusercontent
+      const baseUrl = "https://green-poetry-c7a4.seifeddine-znati.workers.dev/?email=";
 
-      // Append email parameter
-      const scriptUrl = baseUrl + "&email=" + encodeURIComponent(email);
+      // Build final URL
+      const scriptUrl = baseUrl + encodeURIComponent(email);
 
       // Fetch attendee info
-      fetch(scriptUrl)
+      fetch(scriptUrl, { cache: "no-store" })
         .then(response => response.json())
         .then(data => {
-          if (!data || Object.keys(data).length === 0) {
+          if (!data || Object.keys(data).length === 0 || data.error) {
             resultDiv.innerHTML = "<p style='color:red;'>Attendee not found!</p>";
           } else {
             // Display info
@@ -51,7 +51,7 @@
           }
         })
         .catch(err => {
-          resultDiv.innerHTML = "<p style='color:red;'>Error fetching data. Make sure the Apps Script URL is accessible.</p>";
+          resultDiv.innerHTML = "<p style='color:red;'>Error fetching data.</p>";
           console.error(err);
         });
     }

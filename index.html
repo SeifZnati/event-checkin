@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Event Check-In</title>
+  <style>
+    body { font-family: Arial, sans-serif; padding: 20px; max-width: 400px; margin: auto; }
+    .attendee { border: 1px solid #ccc; padding: 20px; margin-top: 20px; }
+    label { font-weight: bold; }
+  </style>
+</head>
+<body>
+  <h2>Check-In Scanner</h2>
+  <div id="result">Loading...</div>
+
+  <script>
+    // 1. Read "email" parameter from URL
+    function getEmailFromUrl() {
+      const params = new URLSearchParams(window.location.search);
+      return params.get('email');
+    }
+
+    const email = getEmailFromUrl();
+    const resultDiv = document.getElementById('result');
+
+    if (!email) {
+      resultDiv.innerHTML = "<p style='color:red;'>No email provided in the URL.</p>";
+    } else {
+      // 2. Build the Apps Script URL with the email
+      const scriptUrl = "https://script.google.com/a/macros/aiesec.es/s/AKfycbwuSksdDOyleV_3863n57kKtUSSEr5ID99IDESB9XCJxw/exec?email=" + encodeURIComponent(email);
+      
+      // 3. Fetch attendee info from Apps Script
+      fetch(scriptUrl)
+        .then(response => response.json())
+        .then(data => {
+          if (!data || Object.keys(data).length === 0) {
+            resultDiv.innerHTML = "<p style='color:red;'>Attendee not found!</p>";
+          } else {
+            // 4. Display info
+            resultDiv.innerHTML = `
+              <div class="attendee">
+                <p><label>Nombre & Apellido:</label> ${data.nombre} ${data.apellido}</p>
+                <p><label>Cargo:</label> ${data.cargo}</p>
+                <p><label>Correo Electronico:</label> ${data.correo}</p>
+                <p><label>Empresa:</label> ${data.empresa}</p>
+              </div>`;
+          }
+        })
+        .catch(err => {
+          resultDiv.innerHTML = "<p style='color:red;'>Error fetching data. Make sure the Apps Script URL is accessible.</p>";
+          console.error(err);
+        });
+    }
+  </script>
+</body>
+</html>

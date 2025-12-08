@@ -3,18 +3,80 @@
 <head>
   <meta charset="UTF-8">
   <title>Event Check-In</title>
+
   <style>
-    body { font-family: Arial, sans-serif; padding: 20px; max-width: 400px; margin: auto; }
-    .attendee { border: 1px solid #ccc; padding: 20px; margin-top: 20px; }
-    label { font-weight: bold; }
+    /* --- GENERAL STYLE --- */
+    body {
+      font-family: 'Montserrat', Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      background: linear-gradient(140deg, #001a66 0%, #00308f 40%, #001a66 100%);
+      color: white;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      padding-top: 40px;
+    }
+
+    h2 {
+      font-size: 32px;
+      font-weight: 700;
+      margin-bottom: 20px;
+      text-align: center;
+      letter-spacing: 0.5px;
+    }
+
+    /* --- ATTENDEE CARD --- */
+    .attendee {
+      width: 90%;
+      max-width: 420px;
+      background: rgba(255, 255, 255, 0.07);
+      border-radius: 16px;
+      padding: 25px 30px;
+      margin-top: 20px;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.25);
+      backdrop-filter: blur(6px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      animation: fadeIn 0.4s ease-out;
+    }
+
+    .attendee p {
+      font-size: 16px;
+      margin: 12px 0;
+    }
+
+    label {
+      font-weight: 700;
+      color: #c7d7ff;
+      letter-spacing: 0.3px;
+    }
+
+    /* --- STATUS MESSAGES --- */
+    #result p {
+      font-size: 18px;
+      text-align: center;
+      font-weight: 600;
+    }
+
+    #result p.error {
+      color: #ff8080;
+    }
+
+    /* --- ANIMATION --- */
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
   </style>
 </head>
+
 <body>
   <h2>Check-In Scanner</h2>
   <div id="result">Loading...</div>
 
   <script>
-    // Read email parameter from URL
     function getEmailFromUrl() {
       const params = new URLSearchParams(window.location.search);
       return params.get('email');
@@ -24,23 +86,17 @@
     const resultDiv = document.getElementById('result');
 
     if (!email) {
-      resultDiv.innerHTML = "<p style='color:red;'>No email provided in the URL.</p>";
+      resultDiv.innerHTML = "<p class='error'>No email provided in the URL.</p>";
     } else {
-
-      // ✅ Use your Cloudflare Worker — NOT googleusercontent
       const baseUrl = "https://green-poetry-c7a4.seifeddine-znati.workers.dev/?email=";
-
-      // Build final URL
       const scriptUrl = baseUrl + encodeURIComponent(email);
 
-      // Fetch attendee info
       fetch(scriptUrl, { cache: "no-store" })
         .then(response => response.json())
         .then(data => {
           if (!data || Object.keys(data).length === 0 || data.error) {
-            resultDiv.innerHTML = "<p style='color:red;'>Attendee not found!</p>";
+            resultDiv.innerHTML = "<p class='error'>Attendee not found!</p>";
           } else {
-            // Display info
             resultDiv.innerHTML = `
               <div class="attendee">
                 <p><label>Nombre & Apellido:</label> ${data.nombre} ${data.apellido}</p>
@@ -51,7 +107,7 @@
           }
         })
         .catch(err => {
-          resultDiv.innerHTML = "<p style='color:red;'>Error fetching data.</p>";
+          resultDiv.innerHTML = "<p class='error'>Error fetching data.</p>";
           console.error(err);
         });
     }
